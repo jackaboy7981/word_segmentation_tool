@@ -54,62 +54,78 @@ for file_name in file_names:
                     x_max = i%size[1]
 
         #Final Reshape
-        ratio = 64/(y_max-y_min)
-        reshaped = cv2.resize(src[int(y_min):int(y_max), int(x_min):int(x_max)], (int(ratio * (x_max - x_min)), 64))
-        #Display
-        cv2.imshow('window',reshaped)
-        
-        print("Should this be Labeled? (Y): ")
-        cv2.waitKey(50)
-        choice = msvcrt.getch().decode("utf-8").lower()
-        print(choice)
-        if choice == 'y':
-            #index += 1
-            name = input("Label : ")
-            while name == '':
-                print("Label should be entered !!")
-                name = input("Label : ")
-
-            reshape_choice = input('reshape :')
+        divisor = y_max-y_min
+        if divisor > -1000 and (x_max - x_min) > -1000 :
+            ratio = 64/divisor
             try:
-                reshape_choice = int(reshape_choice)
-            except ValueError:
-                reshape_choice = 0
-            if reshape_choice == 1:
-                temp_reshaped = src[int(y_min):int(y_max), int(x_min):int(x_max)]
-                mid = int((y_max-y_min)/2)
-                currnet_mid = 0
-                max = 0
-                for i in range(int(y_max-y_min)):
-                    if temp_reshaped[i].sum() > max:
-                        max = temp_reshaped[i].sum()
-                        current_mid = i
-                offset = currnet_mid - mid
-                print(offset)
-                if offset > 0 :
-                    if y_min - offset < -1 :
-                        y_min -= offset
-                else :
-                    if y_max - offset < size[0] :
-                        y_max -= offset
-            elif reshape_choice == 2 :
-                offset = y_max - y_min
-                y_min = y_min - offset 
-                y_max = y_max + offset
-            elif reshape_choice == 3 :
-                offset = (y_max - y_min)/2
-                y_max = y_max + offset
-            
-            ratio = 64/(y_max-y_min)
-            reshaped = cv2.resize(src[int(y_min):int(y_max), int(x_min):int(x_max)], (int(ratio * (x_max - x_min)), 64))
-        
-            cv2.destroyAllWindows()
+                reshaped = cv2.resize(src[int(y_min):int(y_max), int(x_min):int(x_max)], (int(ratio * (x_max - x_min)), 64))
+            except:
+                print((int(ratio * (x_max - x_min)), 64))
+            #Display
             cv2.imshow('window',reshaped)
-            cv2.waitKey(50)
-            g = msvcrt.getch()
-            new_file_name = file_path_out+"\\"+str(index)+" "+name+".jpg"
-            cv2.imwrite(new_file_name, reshaped)
-            print('inserted')
-        else :
-            print("not inserted")
-        cv2.destroyAllWindows()
+            choice = 'c'
+            while choice != 'y' and choice != 'n':
+                print("Should this be Labeled? (Y): ")
+                cv2.waitKey(50)
+                choice = msvcrt.getch().decode("utf-8").lower()
+                if choice != 'y' and choice != 'n' :
+                    print('wrong choice :')
+                else :
+                    print(choice)
+            if choice == 'y':
+                index += 1
+                name = input("Label : ")
+                while name == '':
+                    print("Label should be entered !!")
+                    name = input("Label : ")
+
+                reshape_choice = input('reshape :')
+                try:
+                    reshape_choice = int(reshape_choice)
+                except ValueError:
+                    reshape_choice = 0
+                if reshape_choice == 1:
+                    temp_reshaped = src[int(y_min):int(y_max), int(x_min):int(x_max)]
+                    mid = int((y_max-y_min)/2)
+                    currnet_mid = 0
+                    max = 0
+                    for i in range(int(y_max-y_min)):
+                        if temp_reshaped[i].sum() > max:
+                            max = temp_reshaped[i].sum()
+                            current_mid = i
+                    offset = currnet_mid - mid
+                    print(offset)
+                    if offset > 0 :
+                        if y_min - offset < -1 :
+                            y_min -= offset
+                    else :
+                        if y_max - offset < size[0] :
+                            y_max -= offset
+                elif reshape_choice == 2 :
+                    offset = y_max - y_min
+                    y_min = y_min - offset 
+                    y_max = y_max + offset
+                elif reshape_choice == 3 :
+                    offset = (y_max - y_min)/2
+                    y_max = y_max + offset
+                elif reshape_choice == 4 :
+                    offset = (y_max - y_min)/2
+                    y_min = y_min - offset
+                
+                ratio = 64/(y_max-y_min)
+                try:
+                    reshaped = cv2.resize(src[int(y_min):int(y_max), int(x_min):int(x_max)], (int(ratio * (x_max - x_min)), 64))
+                except:
+                    print(int(ratio * (x_max - x_min)), 64)
+                cv2.destroyAllWindows()
+                cv2.imshow('window',reshaped)
+                cv2.waitKey(50)
+                g = msvcrt.getch()
+                new_file_name = file_path_out+"\\"+str(index)+" "+name+".jpg"
+                cv2.imwrite(new_file_name, reshaped)
+                print('inserted')
+            else :
+                print("not inserted")
+            cv2.destroyAllWindows()
+    
+    os.remove(file_path+'\\'+file_name)
